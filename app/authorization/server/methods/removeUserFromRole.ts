@@ -5,10 +5,14 @@ import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
 import { api } from '../../../../server/sdk/api';
 import { Roles } from '../../../models/server/raw';
+import { IUser } from '../../../../definition/IUser';
 
 Meteor.methods({
 	async 'authorization:removeUserFromRole'(roleName, username, scope) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
+		const userId = Meteor.userId();
+		if (!userId) return;
+
+		if (!Meteor.userId() || !hasPermission(userId, 'access-permissions', scope)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Access permissions is not allowed', {
 				method: 'authorization:removeUserFromRole',
 				action: 'Accessing_permissions',
@@ -49,7 +53,7 @@ Meteor.methods({
 				})
 				.count();
 
-			const userIsAdmin = user.roles?.indexOf('admin') > -1;
+			const userIsAdmin = (user as IUser).roles?.indexOf('admin') > -1;
 			if (adminCount === 1 && userIsAdmin) {
 				throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without admins is not allowed', {
 					method: 'removeUserFromRole',

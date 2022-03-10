@@ -1,13 +1,14 @@
 import { hasPermissionAsync } from './hasPermission';
 import { getValue } from '../../../settings/server/raw';
-import { Rooms } from '../../../models';
+import { Rooms } from '../../../models/server';
+import { IUser } from '../../../../definition/IUser';
 
-const elapsedTime = (ts) => {
+const elapsedTime = (ts: number): number => {
 	const dif = Date.now() - ts;
 	return Math.round(dif / 1000 / 60);
 };
 
-export const canDeleteMessageAsync = async (uid, { u, rid, ts }) => {
+export const canDeleteMessageAsync = async (uid: string, { u, rid, ts }: { u: IUser; rid: string; ts: number }): Promise<boolean> => {
 	const forceDelete = await hasPermissionAsync(uid, 'force-delete-message', rid);
 
 	if (forceDelete) {
@@ -25,7 +26,7 @@ export const canDeleteMessageAsync = async (uid, { u, rid, ts }) => {
 
 	const allowedToDeleteAny = await hasPermissionAsync(uid, 'delete-message', rid);
 
-	const allowed = allowedToDeleteAny || (uid === u._id && (await hasPermissionAsync(uid, 'delete-own-message')));
+	const allowed = allowedToDeleteAny || (uid === u._id && (await hasPermissionAsync(uid, 'delete-own-message', rid)));
 	if (!allowed) {
 		return false;
 	}
@@ -47,4 +48,5 @@ export const canDeleteMessageAsync = async (uid, { u, rid, ts }) => {
 	return true;
 };
 
-export const canDeleteMessage = (uid, { u, rid, ts }) => Promise.await(canDeleteMessageAsync(uid, { u, rid, ts }));
+export const canDeleteMessage = (uid: string, { u, rid, ts }: { u: IUser; rid: string; ts: number }): boolean =>
+	Promise.await(canDeleteMessageAsync(uid, { u, rid, ts }));

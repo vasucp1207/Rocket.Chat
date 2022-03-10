@@ -1,4 +1,4 @@
-export const getSettingPermissionId = function (settingId) {
+export const getSettingPermissionId = function (settingId: string): string {
 	// setting-based permissions
 	return `change-setting-${settingId}`;
 };

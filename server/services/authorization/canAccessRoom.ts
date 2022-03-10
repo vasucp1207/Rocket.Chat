@@ -17,7 +17,7 @@ async function canAccessPublicRoom(user: Partial<IUser>): Promise<boolean> {
 	return Authorization.hasPermission(user._id, 'view-c-room');
 }
 
-const roomAccessValidators: RoomAccessValidator[] = [
+export const roomAccessValidators: RoomAccessValidator[] = [
 	async function _validateAccessToPublicRoomsInTeams(room, user): Promise<boolean> {
 		if (!room) {
 			return false;

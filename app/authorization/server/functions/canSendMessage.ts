@@ -3,6 +3,8 @@ import { hasPermissionAsync } from './hasPermission';
 import { Subscriptions, Rooms } from '../../../models/server/raw';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { IRoom } from '../../../../definition/IRoom';
+import { IUser } from '../../../../definition/IUser';
 
 const subscriptionOptions = {
 	projection: {
@@ -11,12 +13,16 @@ const subscriptionOptions = {
 	},
 };
 
-export const validateRoomMessagePermissionsAsync = async (room, { uid, username, type }, extraData) => {
+export const validateRoomMessagePermissionsAsync = async (
+	room: IRoom,
+	{ uid, username, type }: { uid: string; username: string; type: string },
+	extraData: Record<string, unknown> | undefined,
+): Promise<void> => {
 	if (!room) {
 		throw new Error('error-invalid-room');
 	}
 
-	if (type !== 'app' && !(await canAccessRoomAsync(room, { _id: uid, username }, extraData))) {
+	if (type !== 'app' && !(await canAccessRoomAsync(room, { _id: uid, username } as Pick<IUser, '_id'>, extraData))) {
 		throw new Error('error-not-allowed');
 	}
 
@@ -39,13 +45,23 @@ export const validateRoomMessagePermissionsAsync = async (room, { uid, username,
 	}
 };
 
-export const canSendMessageAsync = async (rid, { uid, username, type }, extraData) => {
+export const canSendMessageAsync = async (
+	rid: string,
+	{ uid, username, type }: { uid: string; username: string; type: string },
+	extraData: Record<string, unknown> | undefined,
+): Promise<unknown> => {
 	const room = await Rooms.findOneById(rid);
 	await validateRoomMessagePermissionsAsync(room, { uid, username, type }, extraData);
 	return room;
 };
 
-export const canSendMessage = (rid, { uid, username, type }, extraData) =>
-	Promise.await(canSendMessageAsync(rid, { uid, username, type }, extraData));
-export const validateRoomMessagePermissions = (room, { uid, username, type }, extraData) =>
-	Promise.await(validateRoomMessagePermissionsAsync(room, { uid, username, type }, extraData));
+export const canSendMessage = (
+	rid: string,
+	{ uid, username, type }: { uid: string; username: string; type: string },
+	extraData: Record<string, unknown> | undefined,
+): unknown => Promise.await(canSendMessageAsync(rid, { uid, username, type }, extraData));
+export const validateRoomMessagePermissions = (
+	room: IRoom,
+	{ uid, username, type }: { uid: string; username: string; type: string },
+	extraData: Record<string, unknown> | undefined,
+): void => Promise.await(validateRoomMessagePermissionsAsync(room, { uid, username, type }, extraData));
