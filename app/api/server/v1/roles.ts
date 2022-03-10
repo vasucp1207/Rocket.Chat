@@ -64,7 +64,8 @@ API.v1.addRoute(
 
 			const { name, scope, description, mandatory2fa } = this.bodyParams;
 
-			if (!(await hasPermissionAsync(Meteor.userId(), 'access-permissions'))) {
+			const uid = Meteor.userId();
+			if (uid && !(await hasPermissionAsync(uid, 'access-permissions'))) {
 				throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
 			}
 

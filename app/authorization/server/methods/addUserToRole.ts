@@ -9,7 +9,9 @@ import { Roles } from '../../../models/server/raw';
 
 Meteor.methods({
 	async 'authorization:addUserToRole'(roleName, username, scope) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
+		const uid = Meteor.userId();
+
+		if (!uid || !hasPermission(uid, 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
 				method: 'authorization:addUserToRole',
 				action: 'Accessing_permissions',
@@ -22,7 +24,7 @@ Meteor.methods({
 			});
 		}
 
-		if (roleName === 'admin' && !hasPermission(Meteor.userId(), 'assign-admin-role')) {
+		if (roleName === 'admin' && !hasPermission(uid, 'assign-admin-role')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
 				method: 'authorization:addUserToRole',
 				action: 'Assign_admin',

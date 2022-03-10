@@ -6,10 +6,11 @@ import { Integrations } from '../../../../models/server/raw';
 Meteor.methods({
 	async deleteIncomingIntegration(integrationId) {
 		let integration;
+		const uid = this.userId;
 
-		if (hasPermission(this.userId, 'manage-incoming-integrations')) {
+		if (uid && hasPermission(uid, 'manage-incoming-integrations')) {
 			integration = Integrations.findOneById(integrationId);
-		} else if (hasPermission(this.userId, 'manage-own-incoming-integrations')) {
+		} else if (uid && hasPermission(uid, 'manage-own-incoming-integrations')) {
 			integration = Integrations.findOne({
 				'_id': integrationId,
 				'_createdBy._id': this.userId,

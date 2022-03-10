@@ -7,12 +7,13 @@ import notifications from '../../../notifications/server/lib/Notifications';
 Meteor.methods({
 	async clearIntegrationHistory(integrationId) {
 		let integration;
+		const uid = this.userId;
 
-		if (hasPermission(this.userId, 'manage-outgoing-integrations') || hasPermission(this.userId, 'manage-outgoing-integrations', 'bot')) {
+		if (uid && (hasPermission(uid, 'manage-outgoing-integrations') || hasPermission(uid, 'manage-outgoing-integrations', 'bot'))) {
 			integration = await Integrations.findOneById(integrationId);
 		} else if (
-			hasPermission(this.userId, 'manage-own-outgoing-integrations') ||
-			hasPermission(this.userId, 'manage-own-outgoing-integrations', 'bot')
+			uid &&
+			(hasPermission(uid, 'manage-own-outgoing-integrations') || hasPermission(uid, 'manage-own-outgoing-integrations', 'bot'))
 		) {
 			integration = await Integrations.findOne({
 				'_id': integrationId,

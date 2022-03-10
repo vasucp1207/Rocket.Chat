@@ -5,7 +5,9 @@ import { hasPermission } from '../functions/hasPermission';
 
 Meteor.methods({
 	async 'authorization:deleteRole'(roleName) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
+		const uid = Meteor.userId();
+
+		if (!uid || !hasPermission(uid, 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
 				method: 'authorization:deleteRole',
 				action: 'Accessing_permissions',
