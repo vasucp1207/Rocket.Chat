@@ -8,12 +8,12 @@ Meteor.methods({
 	async replayOutgoingIntegration({ integrationId, historyId }) {
 		let integration;
 
-		if (hasPermission(this.userId, 'manage-outgoing-integrations') || hasPermission(this.userId, 'manage-outgoing-integrations', 'bot')) {
+		const uid = this.userId;
+		if (!uid) return;
+
+		if (hasPermission(uid, 'manage-outgoing-integrations') || hasPermission(uid, 'manage-outgoing-integrations', 'bot')) {
 			integration = await Integrations.findOneById(integrationId);
-		} else if (
-			hasPermission(this.userId, 'manage-own-outgoing-integrations') ||
-			hasPermission(this.userId, 'manage-own-outgoing-integrations', 'bot')
-		) {
+		} else if (hasPermission(uid, 'manage-own-outgoing-integrations') || hasPermission(uid, 'manage-own-outgoing-integrations', 'bot')) {
 			integration = await Integrations.findOne({
 				'_id': integrationId,
 				'_createdBy._id': this.userId,
