@@ -58,6 +58,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ 'services.saml.inResponseTo': 1 });
 		this.tryEnsureIndex({ openBusinessHours: 1 }, { sparse: true });
 		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
+		this.tryEnsureIndex({ extension: 1 }, { sparse: true, unique: true });
 		this.tryEnsureIndex({ language: 1 }, { sparse: true });
 
 		const collectionObj = this.model.rawCollection();
@@ -767,6 +768,12 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByRolesAndType(roles, type, options) {
+		const query = { roles, type };
+
+		return this.findOne(query, options);
+	}
+
 	// FIND
 	findByIds(users, options) {
 		const query = { _id: { $in: users } };
@@ -1049,6 +1056,9 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	/**
+	 * @param {import('mongodb').FilterQuery<import('../../../../definition/IStats').IStats>} fields
+	 */
 	getOldest(fields = { _id: 1 }) {
 		const query = {
 			_id: {

@@ -8,13 +8,13 @@ import { appLayout } from '../../../../client/lib/appLayout';
 import { Messages, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
-import { roomTypes } from '../../../utils';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { call } from '../../../../client/lib/utils/call';
 import { RoomManager, RoomHistoryManager } from '..';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 import { Rooms } from '../../../models/client';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
 window.currentTracker = undefined;
 
@@ -31,12 +31,12 @@ export const openRoom = async function (type, name, render = true) {
 	window.currentTracker = Tracker.autorun(async function (c) {
 		const user = Meteor.user();
 		if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
-			appLayout.render('main');
+			appLayout.renderMainLayout();
 			return;
 		}
 
 		try {
-			const room = roomTypes.findRoom(type, name, user) || (await call('getRoomByTypeAndName', type, name));
+			const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name) || (await call('getRoomByTypeAndName', type, name));
 			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
 
 			if (room._id !== name && type === 'd') {
@@ -51,7 +51,9 @@ export const openRoom = async function (type, name, render = true) {
 
 			RoomManager.open(type + name);
 
-			render && appLayout.render('main', { center: 'room' });
+			if (render) {
+				appLayout.renderMainLayout({ center: 'room' });
+			}
 
 			c.stop();
 
@@ -60,6 +62,7 @@ export const openRoom = async function (type, name, render = true) {
 			}
 
 			NewRoomManager.open(room._id);
+			Session.set('openedRoom', room._id);
 
 			fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
 
@@ -91,13 +94,15 @@ export const openRoom = async function (type, name, render = true) {
 		} catch (error) {
 			c.stop();
 			if (type === 'd') {
-				const result = await callWithErrorHandling('createDirectMessage', ...name.split(', '));
-				if (result) {
-					return FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
+				try {
+					const { rid } = await call('createDirectMessage', ...name.split(', '));
+					return FlowRouter.go('direct', { rid }, FlowRouter.current().queryParams);
+				} catch (error) {
+					console.error(error);
 				}
 			}
 			Session.set('roomNotFound', { type, name, error });
-			return appLayout.render('main', { center: 'roomNotFound' });
+			appLayout.renderMainLayout({ center: 'roomNotFound' });
 		}
 	});
 };

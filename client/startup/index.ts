@@ -1,8 +1,10 @@
 import './absoluteUrl';
+import './afterLogoutCleanUp';
 import './appRoot';
 import './banners';
 import './callbacks';
 import './contextualBar';
+import './customOAuth';
 import './customTranslations';
 import './e2e';
 import './emailVerification';
@@ -29,3 +31,4 @@ import './userRoles';
 import './userSetUtcOffset';
 import './usersObserve';
 import './userStatusManuallySet';
+import '../lib/rooms/roomTypes';
