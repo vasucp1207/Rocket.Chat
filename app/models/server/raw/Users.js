@@ -997,7 +997,6 @@ export class UsersRaw extends BaseRaw {
 			],
 		};
 
-		console.log(JSON.stringify(query), includeExt, text);
 		return this.find(query, options);
 	}
 }
