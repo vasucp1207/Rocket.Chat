@@ -990,17 +990,14 @@ export class UsersRaw extends BaseRaw {
 		const query = {
 			roles: { $in: ['livechat-agent', 'livechat-manager', 'livechat-monitor'] },
 			$and: [
-				{ $or: [...(includeExt ? [{ extension: includeExt }] : []), { extension: { $exists: false } }] },
 				...(text && text.trim()
-					? [
-							{
-								$or: [{ username: escapeRegExp(text) }, { name: escapeRegExp(text) }],
-							},
-					  ]
+					? [{ $or: [{ username: new RegExp(escapeRegExp(text), 'i') }, { name: new RegExp(escapeRegExp(text), 'i') }] }]
 					: []),
+				{ $or: [{ extension: { $exists: false } }, ...(includeExt ? [{ extension: includeExt }] : [])] },
 			],
 		};
 
+		console.log(JSON.stringify(query), includeExt, text);
 		return this.find(query, options);
 	}
 }
