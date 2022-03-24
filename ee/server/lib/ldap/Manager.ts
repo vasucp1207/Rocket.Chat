@@ -216,8 +216,8 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		const ldapFields = Object.keys(fieldMap);
-		const roleList: Array<IRole['name']> = [];
-		const allowedRoles: Array<IRole['name']> = [];
+		const roleList: Array<IRole['_id']> = [];
+		const allowedRoles: Array<IRole['_id']> = [];
 
 		for await (const ldapField of ldapFields) {
 			if (!fieldMap[ldapField]) {
@@ -227,11 +227,11 @@ export class LDAPEEManager extends LDAPManager {
 			const userFields: string[] = Array.isArray(fieldMap[ldapField]) ? fieldMap[ldapField] : new Array(fieldMap[ldapField]);
 
 			for await (const userField of userFields) {
-				const [roleName] = userField.split(/\.(.+)/);
-				allowedRoles.push(roleName);
+				const [roleId] = userField.split(/\.(.+)/);
+				allowedRoles.push(roleId);
 
 				if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapField)) {
-					roleList.push(roleName);
+					roleList.push(roleId);
 					continue;
 				}
 			}
