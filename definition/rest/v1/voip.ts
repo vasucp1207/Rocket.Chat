@@ -24,7 +24,7 @@ export type VoipEndpoints = {
 	};
 	'omnichannel/extensions': {
 		GET: (
-			params: PaginatedRequest<{ status: string; agentId: string; queues: string[]; extension: string }>,
+			params: PaginatedRequest<{ status?: string; agentId?: string; queues?: string[]; extension?: string }>,
 		) => PaginatedResult<{ extensions: IVoipExtensionWithAgentInfo[] }>;
 	};
 	'omnichannel/extension': {
