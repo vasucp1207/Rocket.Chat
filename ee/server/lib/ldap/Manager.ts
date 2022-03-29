@@ -224,7 +224,7 @@ export class LDAPEEManager extends LDAPManager {
 				continue;
 			}
 
-			const userFields: string[] = Array.isArray(fieldMap[ldapField]) ? fieldMap[ldapField] : new Array(fieldMap[ldapField]);
+			const userFields: string[] = Array.isArray(fieldMap[ldapField]) ? fieldMap[ldapField] : [fieldMap[ldapField]];
 
 			for await (const userField of userFields) {
 				const [roleId] = userField.split(/\.(.+)/);
