@@ -18,6 +18,7 @@ import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../../app/lib/server/functions';
 import { syncUserRoles } from '../syncUserRoles';
 import { Team } from '../../../../server/sdk';
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {
@@ -224,7 +225,7 @@ export class LDAPEEManager extends LDAPManager {
 				continue;
 			}
 
-			const userFields: string[] = Array.isArray(fieldMap[ldapField]) ? fieldMap[ldapField] : [fieldMap[ldapField]];
+			const userFields = ensureArray<string>(fieldMap[ldapField]);
 
 			for await (const userField of userFields) {
 				const [roleId] = userField.split(/\.(.+)/);
