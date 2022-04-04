@@ -2,7 +2,7 @@ import { upsertPermissions } from '../../../app/authorization/server/functions/u
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
-	version: 254,
+	version: 259,
 	up() {
 		return upsertPermissions();
 	},
