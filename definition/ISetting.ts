@@ -148,6 +148,7 @@ export interface ISettingStatistics {
 	smtpHost?: string;
 	smtpPort?: string;
 	fromEmail?: string;
+	fileUploadEnable?: boolean;
 	frameworkDevMode?: boolean;
 	frameworkEnable?: boolean;
 	surveyEnabled?: boolean;
@@ -189,6 +190,9 @@ export interface ISettingStatisticsObject {
 			smtpPort?: string;
 			fromEmail?: string;
 		};
+	};
+	fileUpload?: {
+		fileUploadEnable?: boolean;
 	};
 	general?: {
 		apps?: {
