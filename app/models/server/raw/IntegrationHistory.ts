@@ -1,7 +1,9 @@
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw, IndexSpecification } from './BaseRaw';
 import { IIntegrationHistory } from '../../../../definition/IIntegrationHistory';
 
 export class IntegrationHistoryRaw extends BaseRaw<IIntegrationHistory> {
+	protected indexes: IndexSpecification[] = [{ key: { _updatedAt: 1 }, expireAfterSeconds: 30 * 24 * 60 * 60 }]; // 30 days
+
 	removeByIntegrationId(integrationId: string): ReturnType<BaseRaw<IIntegrationHistory>['deleteMany']> {
 		return this.deleteMany({ 'integration._id': integrationId });
 	}
