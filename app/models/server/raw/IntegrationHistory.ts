@@ -1,4 +1,5 @@
 import { Collection } from 'mongodb';
+
 import { BaseRaw, IndexSpecification } from './BaseRaw';
 import { IIntegrationHistory } from '../../../../definition/IIntegrationHistory';
 
